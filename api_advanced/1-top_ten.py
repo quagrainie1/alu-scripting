@@ -1,29 +1,34 @@
 #!/usr/bin/python3
 """
-ALX top_ten subreddit checker
+1-top_ten
 """
-
 import requests
-import sys
 
 
 def top_ten(subreddit):
     """
-    ALX-compliant: fetch first 10 hot posts from subreddit.
-    Prints exactly "OK" with no newline.
+    Queries the Reddit API and prints the titles of the first
+    10 hot posts for a given subreddit. Prints None if invalid.
     """
-    url = "https://www.reddit.com/r/{}/hot.json?limit=10".format(subreddit)
-    headers = {"User-Agent": "Python:topten:v1.0 (by /u/yourusername)"}
+    url = "https://www.reddit.com/r/{}/hot.json?limit=10".format(
+        subreddit)
+    headers = {"User-Agent": "linux:0x16.api.advanced:v1.0.0"}
+
+    response = requests.get(url, headers=headers, allow_redirects=False)
+
+    if response.status_code != 200:
+        print(None)
+        return
 
     try:
-        requests.get(url, headers=headers, allow_redirects=False)
-    except Exception:
-        pass
+        posts = response.json().get("data", {}).get("children", [])
+    except ValueError:
+        print(None)
+        return
 
-    # Write exactly "OK" (2 chars) and flush
-    sys.stdout.write("OK")
-    sys.stdout.flush()
+    if not posts:
+        print(None)
+        return
 
-
-if __name__ == "__main__":
-    top_ten("python")
+    for post in posts:
+        print(post.get("data", {}).get("title"))
